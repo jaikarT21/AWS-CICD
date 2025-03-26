@@ -27,7 +27,7 @@ phases:
          - echo "enter the build phase "
          - cd simple-python-app/
          - echo "building docker image"
-         - echo "$docker_password" | docker login -u "$docker_username" --password-stdin "$docker_registery_url"
+         - echo "$docker_password" | docker login -u "$docker_username" --password-stdin 
          - docker images 
          
          - docker build -t "$docker_username/my_first_python_app:latest" .
