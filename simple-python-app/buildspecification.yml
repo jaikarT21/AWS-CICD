@@ -34,10 +34,14 @@ phases:
          - docker push  "$docker_username/my_first_python_app:latest" 
      finally:
     
-          - "when docker commands dont work"
+          - echo "when docker commands dont work"
          
   post_build:
       commands:
-          - " build successfully executed "
-         
+          - echo " build successfully executed "
+
+  
+artifacts:
+  files:
+    - '**/*'
 
