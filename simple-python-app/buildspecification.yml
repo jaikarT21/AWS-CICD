@@ -1,0 +1,43 @@
+version: 0.2
+
+
+env:
+  parameter-store:
+    docker_username : /myapp/docker/username
+    docker_password : /myapp/docker/password 
+    docker_registery_url : /myapp/dockerigestry/url
+    
+    
+phases:
+  install:
+     runtime-versions:
+         python : 3.11
+     commands:
+         - sudo snap install docker.io -y 
+         
+  pre_build:
+     commands:
+         - echo "install dependencies" 
+         - pip install -r simple-python-app/requirements.txt
+     finally:
+         - echo this then dependencies fail
+  
+  build:
+     commands:
+         - echo "enter the build phase "
+         - cd simple-python-app/
+         - echo "building docker image"
+         - echo "$docker_password" | docker login -u "$docker_username" --password-stdin "$docker_registery_url"
+         - docker images 
+         
+         - docker build -t "$docker_username/my_first_python_app:latest" .
+         - docker push  "$docker_username/my_first_python_app:latest" 
+     finally:
+    
+          - "when docker commands dont work"
+         
+  post_build:
+      commands:
+          - " build successfully executed "
+         
+
