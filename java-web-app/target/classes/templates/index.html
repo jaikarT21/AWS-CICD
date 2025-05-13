@@ -1,12 +1,106 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${title}">Spring Boot App</title>
+    <title>Jaikar's Spring Boot App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #fff);
+            padding: 40px 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #00796b;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+        }
+
+        .tagline {
+            font-style: italic;
+            color: #555;
+        }
+
+        .tech-stack {
+            margin-top: 30px;
+        }
+
+        .tech-stack h2 {
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+            color: #00695c;
+        }
+
+        ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        ul li {
+            background: #e0f2f1;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            color: #004d40;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        footer {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+    </style>
 </head>
 <body>
-    <h1 th:text="${title}"></h1>
-    <p th:text="${msg}"></p>
+    <div class="container">
+        <h1>Welcome to Jaikar's Spring Boot App</h1>
+        <p>This is a professional-grade landing page hosted via Spring Boot.</p>
+        <p class="tagline">CI/CD | Docker | Kubernetes | Argo CD | Thymeleaf</p>
+
+        <div class="tech-stack">
+            <h2>Tech Stack</h2>
+            <ul>
+                <li>Spring Boot</li>
+                <li>Maven</li>
+                <li>Thymeleaf</li>
+                <li>Docker</li>
+                <li>Kubernetes</li>
+                <li>Argo CD</li>
+            </ul>
+        </div>
+
+        <footer>
+            Deployed with ❤️ by Jaikar · 2025
+        </footer>
+    </div>
 </body>
 </html>
+
 
