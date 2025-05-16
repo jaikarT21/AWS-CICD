@@ -1,0 +1,96 @@
+pipeline{
+    agent{
+        docker {
+            image 'jaikar21/docker-agent:v1'  //includes maven, docker, git
+        
+             args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
+        }   
+
+        
+    }
+
+    environment{
+           
+         DOCKER_IMAGE = "jaikar21/java17-web-app:${BUILD_NUMBER}"
+         SONAR_URL = "http://34.207.95.244:9000"
+         DEPLOYMENT_YAML = ""
+
+           
+    }
+    stages{
+        stage("checkout code"){
+            steps{
+                git branch: 'main' , url : 'https://github.com/jaikarT21/AWS-CICD.git'
+            }
+           
+                
+        }
+        stage ("build JAR with maven"){
+
+            steps{
+
+                sh ' cd java-web-app/ && mvn clean package -DskipTests'
+            }
+        }
+
+        stage ( 'SonarQube code analysis') {
+
+            steps {
+
+                WithCredentials([string ( credentialsId : 'sonarqube' , variable : 'SONAR_AUTH_TOKEN')])
+                sh '''
+                    cd java-web-app/
+                    mvn sonar:sonar -Dsonar.login=$SONAR_AUTH-TOKEN -Dsonar.host.url=${SONAR_URL}
+                    '''
+            }
+        }
+
+        stage('Build and Push Docker Image') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'docker-cred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+          sh '''
+            cd java-web-app/
+            docker build -t ${DOCKER_IMAGE} .
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+            docker push ${DOCKER_IMAGE}
+          '''
+        }
+      }
+    }
+
+    stage('Update Deployment YAML and Push to GitHub') {
+      environment {
+        GIT_REPO_NAME = "yourrepo"
+        GIT_USER_NAME = "yourgithubuser"
+      }
+      steps {
+        withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+          sh """
+            git config user.email "jenkins@ci.com"
+            git config user.name "Jenkins CI"
+            sed -i 's|image:.*|image: ${DOCKER_IMAGE}|' ${DEPLOYMENT_YAML}
+            git add ${DEPLOYMENT_YAML}
+            git commit -m "CI: Update image tag to ${BUILD_NUMBER}" || echo "No changes to commit"
+            git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
+          """
+        }
+      }
+    }
+    
+    }
+    post {
+    success {
+      echo "CI Pipeline completed successfully"
+      emailext subject: " SUCCESS: Build #${BUILD_NUMBER}",
+               body: "The Jenkins build succeeded. View it here: ${env.BUILD_URL}",
+               to: "${EMAIL_RECIPIENTS}"
+    }
+    failure {
+      echo " Pipeline failed. Investigate issues."
+      emailext subject: "FAILURE: Build #${BUILD_NUMBER}",
+               body: "The Jenkins build failed. View it here: ${env.BUILD_URL}",
+               to: "${EMAIL_RECIPIENTS}"
+    }
+  }
+}
+   
